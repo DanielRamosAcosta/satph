@@ -44,7 +44,7 @@ sequenceDiagram
 
 ```bash
 # Pull the latest image
-docker pull ghcr.io/DanielRamosAcosta/sftpgo-authelia-totp-hook:latest
+docker pull ghcr.io/danielramosacosta/sftpgo-authelia-totp-hook:latest
 
 # Run with environment variables
 docker run -d \
@@ -52,7 +52,7 @@ docker run -d \
   -p 8080:8080 \
   -e AUTHELIA_BASE_URL=https://your-authelia-domain.com \
   -e LOG_LEVEL=info \
-  ghcr.io/DanielRamosAcosta/sftpgo-authelia-totp-hook:latest
+  ghcr.io/danielramosacosta/sftpgo-authelia-totp-hook:latest
 ```
 
 ### Docker Compose
@@ -61,7 +61,7 @@ docker run -d \
 version: '3.8'
 services:
   sftpgo-auth-hook:
-    image: ghcr.io/DanielRamosAcosta/sftpgo-authelia-totp-hook:latest
+    image: ghcr.io/danielramosacosta/sftpgo-authelia-totp-hook:latest
     environment:
       AUTHELIA_BASE_URL: https://your-authelia-domain.com
       HTTP_BIND: 0.0.0.0:8080
@@ -144,7 +144,7 @@ services:
       - auth-hook
 
   auth-hook:
-    image: ghcr.io/DanielRamosAcosta/sftpgo-authelia-totp-hook:latest
+    image: ghcr.io/danielramosacosta/sftpgo-authelia-totp-hook:latest
     environment:
       AUTHELIA_BASE_URL: https://your-authelia-domain.com
     expose:
