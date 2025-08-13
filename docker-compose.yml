@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  sftpgo-auth-hook:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      AUTHELIA_BASE_URL: https://auth.example.com
+    ports:
+      - "8080:8080"

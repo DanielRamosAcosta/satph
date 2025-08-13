@@ -1,0 +1,32 @@
+# Build artifacts
+target/
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+*.md
+docs/
+
+# Example files
+.env.example
+docker-compose.yml
+docker-compose.*.yml
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
