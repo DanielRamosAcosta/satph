@@ -1,5 +1,5 @@
 use crate::domain::auth_service::AuthService;
-use crate::domain::{AuthError, AuthRequest, AuthResult, Protocol, Username, Password};
+use crate::domain::{AuthError, AuthRequest, AuthResult, Password, Protocol, Username};
 use actix_web::{web, HttpResponse, Result as ActixResult};
 use serde::{Deserialize, Serialize};
 use std::net::IpAddr;
@@ -276,36 +276,36 @@ mod tests {
         assert_eq!(body.status, 0);
         assert!(body.message.is_some());
     }
-    
+
     /*
-    #[test]
-    fn test_validate_and_convert_request_success() {
-        let dto = AuthRequestDto {
-            username: "testuser".to_string(),
-            password: "password123456".to_string(),
-            ip: "192.168.1.1".to_string(),
-            protocol: Protocol::SSH,
-        };
+        #[test]
+        fn test_validate_and_convert_request_success() {
+            let dto = AuthRequestDto {
+                username: "testuser".to_string(),
+                password: "password123456".to_string(),
+                ip: "192.168.1.1".to_string(),
+                protocol: Protocol::SSH,
+            };
 
-        let result = validate_and_convert_request(dto).unwrap();
-        assert_eq!(result.username.as_str(), "testuser");
-        assert_eq!(result.password, "password123456");
-        assert_eq!(result.protocol, Protocol::SSH);
-    }
+            let result = validate_and_convert_request(dto).unwrap();
+            assert_eq!(result.username.as_str(), "testuser");
+            assert_eq!(result.password, "password123456");
+            assert_eq!(result.protocol, Protocol::SSH);
+        }
 
-    #[test]
-    fn test_validate_and_convert_request_invalid_ip() {
-        let dto = AuthRequestDto {
-            username: "testuser".to_string(),
-            password: "password123456".to_string(),
-            ip: "invalid-ip".to_string(),
-            protocol: Protocol::SSH,
-        };
+        #[test]
+        fn test_validate_and_convert_request_invalid_ip() {
+            let dto = AuthRequestDto {
+                username: "testuser".to_string(),
+                password: "password123456".to_string(),
+                ip: "invalid-ip".to_string(),
+                protocol: Protocol::SSH,
+            };
 
-        let result = validate_and_convert_request(dto);
-        assert!(matches!(result, Err(AuthError::InputInvalid { .. })));
+            let result = validate_and_convert_request(dto);
+            assert!(matches!(result, Err(AuthError::InputInvalid { .. })));
+        }
     }
-}
-    }
-    */
+        }
+        */
 }

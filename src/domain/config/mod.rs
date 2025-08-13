@@ -26,11 +26,11 @@ pub enum ConfigError {
 
 impl Settings {
     pub fn from_environment(env: &dyn Environment) -> Result<Self, ConfigError> {
-        let authelia_base_url = env
-            .var("AUTHELIA_BASE_URL")
-            .map_err(|_| ConfigError::MissingEnvVar {
-                name: "AUTHELIA_BASE_URL".to_string(),
-            })?;
+        let authelia_base_url =
+            env.var("AUTHELIA_BASE_URL")
+                .map_err(|_| ConfigError::MissingEnvVar {
+                    name: "AUTHELIA_BASE_URL".to_string(),
+                })?;
 
         url::Url::parse(&authelia_base_url).map_err(|_| ConfigError::InvalidValue {
             name: "AUTHELIA_BASE_URL".to_string(),
@@ -50,9 +50,7 @@ impl Settings {
                 error: format!("Must be a valid number: {}", e),
             })?;
 
-        let log_level = env
-            .var("LOG_LEVEL")
-            .unwrap_or_else(|_| "info".to_string());
+        let log_level = env.var("LOG_LEVEL").unwrap_or_else(|_| "info".to_string());
 
         let tls_insecure = env
             .var("TLS_INSECURE")
@@ -113,17 +111,14 @@ mod tests {
 
     impl Environment for MockEnvironment {
         fn var(&self, key: &str) -> Result<String, env::VarError> {
-            self.vars
-                .get(key)
-                .cloned()
-                .ok_or(env::VarError::NotPresent)
+            self.vars.get(key).cloned().ok_or(env::VarError::NotPresent)
         }
     }
 
     #[test]
     fn test_settings_with_mock_environment_defaults() {
-        let mock_env = MockEnvironment::new()
-            .set_var("AUTHELIA_BASE_URL", "https://authelia.test.com");
+        let mock_env =
+            MockEnvironment::new().set_var("AUTHELIA_BASE_URL", "https://authelia.test.com");
 
         let settings = Settings::from_environment(&mock_env).unwrap();
 
@@ -166,8 +161,7 @@ mod tests {
 
     #[test]
     fn test_settings_invalid_url() {
-        let mock_env = MockEnvironment::new()
-            .set_var("AUTHELIA_BASE_URL", "not-a-valid-url");
+        let mock_env = MockEnvironment::new().set_var("AUTHELIA_BASE_URL", "not-a-valid-url");
 
         let result = Settings::from_environment(&mock_env);
 

@@ -93,7 +93,10 @@ mod tests {
         let result = Password::new("short".to_string());
         assert!(matches!(result, Err(AuthError::InputInvalid { .. })));
         if let Err(AuthError::InputInvalid { message }) = result {
-            assert_eq!(message, "Password must be at least 7 characters (6 for TOTP + 1 for password)");
+            assert_eq!(
+                message,
+                "Password must be at least 7 characters (6 for TOTP + 1 for password)"
+            );
         }
     }
 
@@ -144,7 +147,7 @@ mod tests {
         let password1 = Password::new("password123456".to_string()).unwrap();
         let password2 = Password::new("password123456".to_string()).unwrap();
         let password3 = Password::new("different654321".to_string()).unwrap();
-        
+
         assert_eq!(password1, password2);
         assert_ne!(password1, password3);
     }

@@ -115,7 +115,7 @@ mod tests {
         let username1 = Username::new("alice".to_string()).unwrap();
         let username2 = Username::new("alice".to_string()).unwrap();
         let username3 = Username::new("bob".to_string()).unwrap();
-        
+
         assert_eq!(username1, username2);
         assert_ne!(username1, username3);
     }

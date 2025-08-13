@@ -1,5 +1,5 @@
 use crate::domain::config::Settings;
-use crate::domain::{AuthError, SessionCookie, Username, Authelia};
+use crate::domain::{AuthError, Authelia, SessionCookie, Username};
 use async_trait::async_trait;
 use reqwest::{Client, Response, StatusCode};
 use serde_json::json;

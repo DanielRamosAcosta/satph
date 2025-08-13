@@ -48,7 +48,7 @@ impl AuthService {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::domain::{Protocol, Password};
+    use crate::domain::{Password, Protocol};
     use std::net::IpAddr;
     use std::str::FromStr;
 
