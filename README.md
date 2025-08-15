@@ -1,4 +1,4 @@
-# SFTPGo Authelia TOTP Hook
+# Satph - SFTPGo Authelia TOTP Password Hook
 
 A high-performance authentication hook service for [SFTPGo](https://github.com/drakkan/sftpgo) that integrates with [Authelia](https://www.authelia.com/) for two-factor authentication (2FA) using Time-based One-Time Passwords (TOTP).
 
@@ -37,6 +37,39 @@ sequenceDiagram
 3. First factor authentication is performed with username/password against Authelia
 4. If successful, second factor authentication is performed with the TOTP code
 5. The result is returned to SFTPGo
+
+## Specification Compliance
+
+This service implements the [SFTPGo Check Password Hook specification](https://docs.sftpgo.com/2.6/check-password-hook/), ensuring full compatibility with SFTPGo's authentication system.
+
+### Hook Interface
+
+The service provides a REST API endpoint that accepts authentication requests in the format expected by SFTPGo:
+
+**Request Format:**
+```json
+{
+  "username": "alice",
+  "password": "userpassword123456",
+  "ip": "192.168.1.100",
+  "protocol": "SFTP"
+}
+```
+
+**Response Format:**
+- `200 OK` with `{"status": 0}` for successful authentication
+- `200 OK` with `{"status": 1}` for failed authentication
+- `500 Internal Server Error` for system errors
+
+### Protocol Support
+
+The hook supports all SFTPGo protocols:
+- **SFTP** - SSH File Transfer Protocol
+- **SCP** - Secure Copy Protocol  
+- **SSH** - Secure Shell
+- **FTP** - File Transfer Protocol (over TLS)
+- **DAV** - WebDAV
+- **HTTP** - HTTP File Server
 
 ## Installation
 

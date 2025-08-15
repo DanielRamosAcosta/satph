@@ -1,50 +1,49 @@
-# Multi-stage build for minimal production image
-FROM rust:1.84-bookworm AS builder
+# syntax=docker/dockerfile:1.7
 
-# Install cross-compilation tools and musl
-RUN apt-get update && apt-get install -y \
-    musl-tools \
-    musl-dev \
-    gcc-x86-64-linux-gnu \
-    && rm -rf /var/lib/apt/lists/*
+########## STAGE 1: build ##########
+FROM --platform=$BUILDPLATFORM rust:1-bookworm AS builder
+ARG TARGETPLATFORM
+ARG TARGETARCH
 
-# Add musl target for static linking
-RUN rustup target add x86_64-unknown-linux-musl
-
-# Set working directory
 WORKDIR /app
 
-# Configure cross-compilation environment for x86_64 musl
-ENV CC_x86_64_unknown_linux_musl=x86_64-linux-gnu-gcc
-ENV CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER=x86_64-linux-gnu-gcc
+# Elegir el target musl según la arquitectura
+RUN case "$TARGETARCH" in \
+      "amd64")  echo x86_64-unknown-linux-musl  > /rust_target ;; \
+      "arm64")  echo aarch64-unknown-linux-musl > /rust_target ;; \
+      *) echo "Arquitectura no soportada: $TARGETARCH" && exit 1 ;; \
+    esac \
+ && rustup target add $(cat /rust_target)
 
-# Copy dependency files first for better layer caching
+# Herramientas necesarias para compilar estático con musl
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends musl-tools pkg-config ca-certificates \
+ && update-ca-certificates \
+ && rm -rf /var/lib/apt/lists/*
+
+# --- Cacheo de dependencias de Cargo ---
+# Si usas workspace, copia también el Cargo.toml del workspace y los Cargo.toml de crates relevantes.
 COPY Cargo.toml Cargo.lock ./
+# Copia el src después para aprovechar capas de caché de dependencias
+COPY src ./src
 
-# Create dummy main.rs to cache dependencies
-RUN mkdir -p src && echo "fn main() {}" > src/main.rs
+# Compilar en release para el target elegido (con caché de registry y /target)
+RUN --mount=type=cache,target=/usr/local/cargo/registry \
+    --mount=type=cache,target=/app/target \
+    RUST_TARGET=$(cat /rust_target) \
+ && cargo build --release --target $RUST_TARGET \
+ && install -Dm755 target/$RUST_TARGET/release/sftpgo-authelia-totp-hook /out/sftpgo-authelia-totp-hook
 
-# Build dependencies (cached layer)
-RUN cargo build --target x86_64-unknown-linux-musl --release
-RUN rm -rf src
+########## STAGE 2: runtime ##########
+FROM scratch AS runtime
 
-# Copy source code
-COPY src/ ./src/
+# (Opcional pero útil) Certificados raíz para TLS/HTTPS
+COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
 
-# Build the application with static linking
-RUN cargo build --target x86_64-unknown-linux-musl --release
+# Binario estático
+COPY --from=builder /out/sftpgo-authelia-totp-hook /sftpgo-authelia-totp-hook
 
-# Production stage - minimal Alpine image for debugging
-FROM alpine:3.20 AS production
+# Usuario no root (ID arbitrario). En scratch no hay /etc/passwd, pero esto funciona.
+USER 10001:10001
 
-# Install CA certificates for HTTPS connections
-RUN apk --no-cache add ca-certificates
-
-# Copy the statically linked binary
-COPY --from=builder /app/target/x86_64-unknown-linux-musl/release/sftpgo-authelia-totp-hook /sftpgo-authelia-totp-hook
-
-# Expose port 8080
-EXPOSE 8080
-
-# Run the binary
 ENTRYPOINT ["/sftpgo-authelia-totp-hook"]
