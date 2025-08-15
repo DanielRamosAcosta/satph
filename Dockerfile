@@ -15,11 +15,22 @@ RUN case "$TARGETARCH" in \
     esac \
  && rustup target add $(cat /rust_target)
 
-# Herramientas necesarias para compilar estático con musl
+# Herramientas necesarias para compilar estático con musl y cross-compilation
 RUN apt-get update \
- && apt-get install -y --no-install-recommends musl-tools pkg-config ca-certificates \
+ && apt-get install -y --no-install-recommends \
+    musl-tools \
+    pkg-config \
+    ca-certificates \
+    gcc-aarch64-linux-gnu \
+    gcc-x86-64-linux-gnu \
  && update-ca-certificates \
  && rm -rf /var/lib/apt/lists/*
+
+# Configure cross-compilation linkers
+ENV CC_aarch64_unknown_linux_musl=aarch64-linux-gnu-gcc
+ENV CARGO_TARGET_AARCH64_UNKNOWN_LINUX_MUSL_LINKER=aarch64-linux-gnu-gcc
+ENV CC_x86_64_unknown_linux_musl=x86_64-linux-gnu-gcc  
+ENV CARGO_TARGET_X86_64_UNKNOWN_LINUX_MUSL_LINKER=x86_64-linux-gnu-gcc
 
 # --- Cacheo de dependencias de Cargo ---
 # Si usas workspace, copia también el Cargo.toml del workspace y los Cargo.toml de crates relevantes.
