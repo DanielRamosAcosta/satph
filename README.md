@@ -1,5 +1,5 @@
 
-# Satph
+# Satph - SFTPGo Authelia TOTP Password Hook
 
 
 A Node.js-powered authentication proxy for SSH, FTP, and DAV, integrating with Authelia for secure multi-factor authentication. Node.js 24+ can run TypeScript directly.
