@@ -1,0 +1,20 @@
+{
+  "name": "satph",
+  "version": "1.0.0",
+  "description": "SFTPGo Authelia TOTP Password Hook",
+  "license": "MIT",
+  "author": "Daniel Ramos Acosta",
+  "type": "module",
+  "main": "index.ts",
+  "scripts": {
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@hono/node-server": "^1.19.0",
+    "@hono/zod-validator": "^0.7.2",
+    "hono": "^4.9.2"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0"
+  }
+}

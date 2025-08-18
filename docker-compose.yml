@@ -1,0 +1,10 @@
+services:
+  app:
+    image: ghcr.io/danielramosacosta/satph:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      AUTHELIA_BASE_URL: "https://auth.example.com"
