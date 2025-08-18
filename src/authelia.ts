@@ -56,13 +56,14 @@ export const authelia = {
     }
   },
 
-  ping: async () => {
+  ping: async (): Promise<string> => {
     try {
       const response = await fetch(`${config.AUTHELIA_BASE_URL}/api/health`);
       if (!response.ok) {
         throw new AutheliaError(`Authelia health check failed: ${response.status}`);
       }
-      return true;
+      const data = await response.json();
+      return data.status;
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       throw new AutheliaError(`Authelia connectivity error: ${message}`);

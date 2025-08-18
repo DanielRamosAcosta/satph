@@ -61,8 +61,7 @@ honoApp.post("/auth", zValidator("json", AuthRequestSchema), async (c) => {
 
 honoApp.get("/health", async (c) => {
   try {
-    await authelia.ping();
-    return c.json({ status: "ok", authelia: "reachable" });
+    return c.json({ status: "ok", authelia: await authelia.ping() });
   } catch (err) {
     return c.json({ status: "fail", authelia: err instanceof Error ? err.message : String(err) }, 503);
   }
