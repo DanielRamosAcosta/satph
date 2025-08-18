@@ -1,7 +1,7 @@
 import { Hono } from "hono";
-import { zValidator } from "@hono/zod-validator";
 import z, { ZodError } from "zod";
 import { authelia, AutheliaError } from "./authelia.ts";
+import { zValidator } from "./zValidator.ts";
 
 const honoApp = new Hono();
 
@@ -26,12 +26,13 @@ honoApp.onError((err, c) => {
     );
   }
   if (err instanceof ZodError) {
+    console.error("Validation error: ", JSON.stringify(z.treeifyError(err)));
     return c.json(
       { status: RESPONSE_STATUS.FAILURE, message: "Validation Error", details: z.treeifyError(err) },
       400
     );
   }
-  
+
   console.error("Internal server error: ", err);
   return c.json(
     { status: RESPONSE_STATUS.FAILURE, message: "Internal Server Error" },
