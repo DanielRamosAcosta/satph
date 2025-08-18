@@ -1,10 +1,11 @@
 
-# satph
+# Satph
 
-A Bun-powered authentication proxy for SSH, FTP, and DAV, integrating with Authelia for secure multi-factor authentication.
+
+A Node.js-powered authentication proxy for SSH, FTP, and DAV, integrating with Authelia for secure multi-factor authentication. Node.js 24+ can run TypeScript directly.
 
 ## Features
-- Fast Bun server
+- Fast Node.js server (TypeScript, Node.js 24+)
 - First and second factor authentication via Authelia
 - Healthcheck endpoint (`/health`) to verify connectivity
 - Simple API for authentication requests
@@ -43,15 +44,15 @@ Checks connectivity to Authelia.
 ## Running Locally
 1. Install dependencies:
 	```fish
-	bun install
+	npm install
 	```
 2. Set environment variable:
 	```fish
 	set -x AUTHELIA_BASE_URL "https://your-authelia-url"
 	```
-3. Start the server:
+3. Start the server (Node.js 24+ runs TypeScript directly):
 	```fish
-	bun run index.ts
+	node index.ts
 	```
 
 ## Docker Usage
