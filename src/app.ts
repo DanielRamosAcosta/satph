@@ -28,7 +28,11 @@ honoApp.onError((err, c) => {
   if (err instanceof ZodError) {
     console.error("Validation error: ", JSON.stringify(z.treeifyError(err)));
     return c.json(
-      { status: RESPONSE_STATUS.FAILURE, message: "Validation Error", details: z.treeifyError(err) },
+      {
+        status: RESPONSE_STATUS.FAILURE,
+        message: "Validation Error",
+        details: z.treeifyError(err),
+      },
       400
     );
   }
@@ -49,6 +53,12 @@ honoApp.post("/auth", zValidator("json", AuthRequestSchema), async (c) => {
     result.protocol
   );
 
+  if (result.ip.startsWith("192.168.")) {
+    console.log("Internal request from IP:", result.ip);
+    await authelia.firstFactor(result.username, result.password);
+    return c.json({ status: RESPONSE_STATUS.SUCCESS });
+  }
+
   const realPassword = result.password.slice(0, -6);
   const totp = result.password.slice(-6);
 
@@ -63,7 +73,13 @@ honoApp.get("/health", async (c) => {
   try {
     return c.json({ status: "ok", authelia: await authelia.ping() });
   } catch (err) {
-    return c.json({ status: "fail", authelia: err instanceof Error ? err.message : String(err) }, 503);
+    return c.json(
+      {
+        status: "fail",
+        authelia: err instanceof Error ? err.message : String(err),
+      },
+      503
+    );
   }
 });
 
