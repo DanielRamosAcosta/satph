@@ -2,6 +2,7 @@ import { Hono } from "hono";
 import z, { ZodError } from "zod";
 import { authelia, AutheliaError } from "./authelia.ts";
 import { zValidator } from "./zValidator.ts";
+import { logger } from "./logger.ts";
 
 const honoApp = new Hono();
 
@@ -19,14 +20,14 @@ const RESPONSE_STATUS = {
 
 honoApp.onError((err, c) => {
   if (err instanceof AutheliaError) {
-    console.log("Authentication error: ", err.message);
+    logger.info({ err }, "Authentication error");
     return c.json(
       { status: RESPONSE_STATUS.FAILURE, message: err.message },
       401
     );
   }
   if (err instanceof ZodError) {
-    console.error("Validation error: ", JSON.stringify(z.treeifyError(err)));
+    logger.info({ err }, "Validation error");
     return c.json(
       {
         status: RESPONSE_STATUS.FAILURE,
@@ -37,7 +38,8 @@ honoApp.onError((err, c) => {
     );
   }
 
-  console.error("Internal server error: ", err);
+  logger.error({ err }, "Internal server error");
+  
   return c.json(
     { status: RESPONSE_STATUS.FAILURE, message: "Internal Server Error" },
     500
@@ -46,15 +48,10 @@ honoApp.onError((err, c) => {
 
 honoApp.post("/auth", zValidator("json", AuthRequestSchema), async (c) => {
   const result = await c.req.valid("json");
-  console.log(
-    "Received auth request",
-    result.username,
-    result.ip,
-    result.protocol
-  );
+  logger.info({ username: result.username, ip: result.ip, protocol: result.protocol }, "Received auth request");
 
-  if (result.ip.startsWith("192.168.")) {
-    console.log("Internal request from IP:", result.ip);
+  if (isLocalNetwork(result.ip) || isLocalhost(result.ip)) {
+    logger.info({ ip: result.ip }, "Internal request from IP");
     await authelia.firstFactor(result.username, result.password);
     return c.json({ status: RESPONSE_STATUS.SUCCESS });
   }
@@ -82,5 +79,13 @@ honoApp.get("/health", async (c) => {
     );
   }
 });
+
+function isLocalNetwork(ip: string) {
+  return ip.startsWith("192.168.");
+}
+
+function isLocalhost(ip: string) {
+  return ip === "127.0.0.1" || ip === "::1";
+}
 
 export const app = honoApp;

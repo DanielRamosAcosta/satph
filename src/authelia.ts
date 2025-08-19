@@ -1,10 +1,11 @@
 import { config } from "./config.ts";
+import { logger } from "./logger.ts";
 
 export class AutheliaError extends Error {}
 
 export const authelia = {
   firstFactor: async (username: string, password: string) => {
-    console.log("Authenticating user", username, "with first factor");
+    logger.info({ username }, "Authenticating user with first factor");
     const response = await fetch(`${config.AUTHELIA_BASE_URL}/api/firstfactor`, {
       method: "POST",
       headers: {
@@ -41,7 +42,7 @@ export const authelia = {
   },
 
   secondFactor: async (session: string, totp: string) => {
-    console.log("Authenticating user with second factor");
+  logger.info({ session }, "Authenticating user with second factor");
     const response = await fetch(`${config.AUTHELIA_BASE_URL}/api/secondfactor/totp`, {
       method: "POST",
       headers: {
